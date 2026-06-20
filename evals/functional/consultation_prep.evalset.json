@@ -1,0 +1,33 @@
+[
+  {
+    "case_id": "func_A_prep_endocrinologue",
+    "input": "Prépare-moi pour mon RDV chez le Dr Martin la semaine prochaine.",
+    "expected_skill": "consultation-prep",
+    "expected_tool_calls": ["health_profile_get", "search_documents"],
+    "rubric": [
+      "Extrait les informations du profil de santé",
+      "Retrouve le dernier bilan thyroïdien",
+      "Génère un résumé complet selon le template avec une liste de questions"
+    ]
+  },
+  {
+    "case_id": "func_B_prep_generaliste",
+    "input": "J'ai un rendez-vous demain pour renouveler mon traitement, tu peux préparer la consultation ?",
+    "expected_skill": "consultation-prep",
+    "expected_tool_calls": ["health_profile_get"],
+    "rubric": [
+      "Identifie le traitement actuel",
+      "Liste les questions pour le renouvellement sans poser de diagnostic"
+    ]
+  },
+  {
+    "case_id": "func_C_prep_new_specialist",
+    "input": "Je vois un allergologue le mois prochain pour la première fois, prépare-moi.",
+    "expected_skill": "consultation-prep",
+    "expected_tool_calls": ["health_profile_get", "search_documents"],
+    "rubric": [
+      "Extrait les allergies connues du profil",
+      "Liste les éléments importants à communiquer à un nouveau spécialiste"
+    ]
+  }
+]

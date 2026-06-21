@@ -2,10 +2,13 @@ import os
 from google.adk.agents import LlmAgent
 from google.adk.models import Gemini
 from google.adk.tools.skill_toolset import SkillToolset
+from google.adk.tools.mcp_tool import McpToolset
+from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
+from mcp import StdioServerParameters
 from google.adk.skills import load_skill_from_dir
 
 from .prompt import ROOT_INSTRUCTION
-from .tools import health_profile_get, search_documents, health_profile_update
+from .tools import health_profile_get, search_documents, health_profile_update, marker_timeline, parse_lab_pdf, index_document
 from .guardrails import medical_guardrail, confirm_writes
 
 # Dynamically load all skills from the `skills/` directory
@@ -17,6 +20,38 @@ if os.path.exists(skills_dir):
         if os.path.isdir(skill_path) and os.path.exists(os.path.join(skill_path, "SKILL.md")):
             loaded_skills.append(load_skill_from_dir(skill_path))
 
+# Google Calendar MCP
+calendar_mcp = McpToolset(
+    connection_params=StdioConnectionParams(
+        server_params=StdioServerParameters(
+            command="npx",
+            args=["-y", "@cocal/google-calendar-mcp"],
+            env={
+                "GOOGLE_OAUTH_CREDENTIALS": os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "gcp-oauth.keys.json")),
+                "PATH": os.environ.get("PATH", "")
+            },
+        ),
+        timeout=60,
+    )
+)
+
+# Gmail MCP (Read-only)
+gmail_mcp = McpToolset(
+    connection_params=StdioConnectionParams(
+        server_params=StdioServerParameters(
+            command="npx",
+            args=["-y", "@shinzolabs/gmail-mcp"],
+            env={
+                "GOOGLE_OAUTH_CREDENTIALS": os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "gcp-oauth.keys.json")),
+                "PATH": os.environ.get("PATH", "")
+            },
+        ),
+        timeout=60,
+    ),
+    # Expose ONLY read tools. Verify these exact names depending on the chosen MCP server.
+    tool_filter=["gmail_search", "gmail_get_message", "gmail_get_thread", "gmail_list_messages", "gmail_list_threads", "search", "read_email", "get_email", "list_emails"]
+)
+
 root_agent = LlmAgent(
     name='mon_parcours_sante',
     model=Gemini(model='gemini-flash-latest'),
@@ -24,7 +59,12 @@ root_agent = LlmAgent(
     tools=[
         health_profile_get,
         search_documents,
+        marker_timeline,
         health_profile_update,
+        parse_lab_pdf,
+        index_document,
+        calendar_mcp,
+        gmail_mcp,
         SkillToolset(skills=loaded_skills)
     ],
     before_model_callback=medical_guardrail,

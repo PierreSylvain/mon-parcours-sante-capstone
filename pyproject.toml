@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "Mon Parcours Sante ADK Agent"
 requires-python = ">=3.10"
 dependencies = [
-    "google-adk>=1.25.0"
+    "google-adk>=1.25.0",
+    "numpy>=2.2.6",
+    "pypdf>=6.13.3",
 ]
 [tool.setuptools]
 packages = ["mon_parcours_sante"]

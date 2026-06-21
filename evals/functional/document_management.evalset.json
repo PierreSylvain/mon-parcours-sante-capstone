@@ -1,0 +1,24 @@
+[
+  {
+    "case_id": "func_D_doc_classify",
+    "input": "Classe ce résultat de laboratoire PDF : evals/test_data/normal_lab.pdf",
+    "expected_skill": "document-management",
+    "expected_tool_calls": ["parse_lab_pdf", "index_document"],
+    "rubric": [
+      "Appelle parse_lab_pdf avec le bon chemin",
+      "Appelle index_document avec l'ID retourné",
+      "Confirme à l'utilisateur que le document a été classé"
+    ]
+  },
+  {
+    "case_id": "func_E_doc_timeline",
+    "input": "Donne moi l'évolution de ma TSH",
+    "expected_skill": "document-management",
+    "expected_tool_calls": ["marker_timeline"],
+    "rubric": [
+      "Appelle l'outil marker_timeline pour la TSH",
+      "Présente les résultats sous forme de timeline chronologique",
+      "N'ajoute aucune interprétation ou jugement de tendance"
+    ]
+  }
+]

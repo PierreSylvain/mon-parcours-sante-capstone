@@ -176,6 +176,26 @@ class HealthStore:
             results.append(doc)
         return results
 
+    def get_all_documents(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM documents")
+        results = []
+        for row in cursor.fetchall():
+            doc = dict(row)
+            if doc['extracted_values']:
+                try:
+                    doc['extracted_values'] = json.loads(doc['extracted_values'])
+                except json.JSONDecodeError:
+                    pass
+            if doc['vector_ref']:
+                try:
+                    doc['vector_ref'] = json.loads(doc['vector_ref'])
+                except json.JSONDecodeError:
+                    pass
+            results.append(doc)
+        return results
+
+
     def update_profile(self, field, value):
         allowed_fields = {'pseudonym', 'birth_year', 'mutuelle_name', 'mutuelle_rate'}
         if field not in allowed_fields:
@@ -196,6 +216,57 @@ class HealthStore:
         ''', (timestamp, field, str(old_value), str(value)))
 
         self.conn.commit()
+        
+    def add_document(self, doc_type, date, source, extracted_values):
+        cursor = self.conn.cursor()
+        extracted_json = json.dumps(extracted_values) if extracted_values else "{}"
+        cursor.execute('''
+            INSERT INTO documents (type, date, source, extracted_values)
+            VALUES (?, ?, ?, ?)
+        ''', (doc_type, date, source, extracted_json))
+        self.conn.commit()
+        return cursor.lastrowid
+        
+    def add_lab_value(self, document_id, marker, value, unit, reference_range, date):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            INSERT INTO lab_values (document_id, marker, value, unit, reference_range, date)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (document_id, marker, str(value), unit, reference_range, date))
+        self.conn.commit()
+        return cursor.lastrowid
+
+    def get_document(self, document_id):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM documents WHERE id = ?", (document_id,))
+        row = cursor.fetchone()
+        if row:
+            doc = dict(row)
+            if doc['extracted_values']:
+                try:
+                    doc['extracted_values'] = json.loads(doc['extracted_values'])
+                except json.JSONDecodeError:
+                    pass
+            return doc
+        return None
+
+    def set_document_vector(self, document_id: int, vector: list[float]) -> None:
+        self.conn.execute(
+            "UPDATE documents SET vector_ref = ? WHERE id = ?",
+            (json.dumps(vector), document_id),
+        )
+        self.conn.commit()
+        
+    def get_marker_timeline(self, marker: str):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT date, value, unit, reference_range
+            FROM lab_values
+            WHERE marker COLLATE NOCASE = ?
+            ORDER BY date ASC
+        ''', (marker,))
+        results = [dict(row) for row in cursor.fetchall()]
+        return results
 
     def close(self):
         self.conn.close()

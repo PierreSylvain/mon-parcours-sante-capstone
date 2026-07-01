@@ -4,7 +4,10 @@
     "input": "Fais le point sur mes remboursements Sécu et mutuelle pour cette année.",
     "expected_skill": "reimbursement-tracking",
     "expected_tool_calls": [
-      {"tool": "reimbursement_summary", "args": {}}
+      {
+        "tool": "reimbursement_summary",
+        "args": {}
+      }
     ],
     "reference_answer": "Voici le récapitulatif de vos remboursements. Au total, la Sécu a remboursé X€, la mutuelle Y€, et votre reste à charge s'élève à Z€.",
     "rubric": [
@@ -18,7 +21,10 @@
     "input": "Y a-t-il des remboursements en retard ?",
     "expected_skill": "reimbursement-tracking",
     "expected_tool_calls": [
-      {"tool": "reimbursement_summary", "args": {}}
+      {
+        "tool": "reimbursement_summary",
+        "args": {}
+      }
     ],
     "reference_answer": "Oui, il semble que votre visite chez le kiné du mois dernier soit encore en attente de remboursement par la mutuelle.",
     "rubric": [
@@ -33,7 +39,10 @@
     "input": "Est-ce que ma mutuelle m'a remboursé le dentiste du mois dernier ?",
     "expected_skill": "reimbursement-tracking",
     "expected_tool_calls": [
-      {"tool": "reimbursement_ledger", "args": {}}
+      {
+        "tool": "reimbursement_summary",
+        "args": {}
+      }
     ],
     "reference_answer": "D'après vos relevés, le soin dentaire a bien été pris en charge par la mutuelle à hauteur de X€ le 12 du mois.",
     "rubric": [
@@ -47,7 +56,10 @@
     "input": "Quel a été mon reste à charge pour mes dernières lunettes ?",
     "expected_skill": "reimbursement-tracking",
     "expected_tool_calls": [
-      {"tool": "reimbursement_ledger", "args": {}}
+      {
+        "tool": "reimbursement_summary",
+        "args": {}
+      }
     ],
     "reference_answer": "Pour vos dernières lunettes, après déduction de la Sécu et de la mutuelle, votre reste à charge a été de 45€.",
     "rubric": [
@@ -61,7 +73,10 @@
     "input": "Donne-moi le détail Sécu vs Mutuelle de mes remboursements de l'année.",
     "expected_skill": "reimbursement-tracking",
     "expected_tool_calls": [
-      {"tool": "reimbursement_summary", "args": {}}
+      {
+        "tool": "reimbursement_summary",
+        "args": {}
+      }
     ],
     "reference_answer": "Voici la répartition : la part Sécurité Sociale est de X€ et la part Mutuelle est de Y€ pour l'année en cours.",
     "rubric": [
@@ -75,7 +90,10 @@
     "input": "J'ai payé 50€ d'ostéopathe aujourd'hui, ajoute-le à mes frais non remboursés.",
     "expected_skill": "reimbursement-tracking",
     "expected_tool_calls": [
-      {"tool": "reimbursement_ledger", "args": {}}
+      {
+        "tool": "reimbursement_summary",
+        "args": {}
+      }
     ],
     "reference_answer": "J'ai bien ajouté cette dépense de 50€ pour l'ostéopathe à votre suivi.",
     "rubric": [
@@ -89,7 +107,10 @@
     "input": "Où en est le remboursement de ma visite chez le rhumatologue ?",
     "expected_skill": "reimbursement-tracking",
     "expected_tool_calls": [
-      {"tool": "reimbursement_ledger", "args": {}}
+      {
+        "tool": "reimbursement_summary",
+        "args": {}
+      }
     ],
     "reference_answer": "La consultation chez le rhumatologue a été télétransmise, mais le remboursement est toujours indiqué comme 'En attente' par la Sécurité Sociale.",
     "rubric": [
@@ -103,7 +124,10 @@
     "input": "Pourquoi mon remboursement kiné est bloqué ?",
     "expected_skill": "reimbursement-tracking",
     "expected_tool_calls": [
-      {"tool": "reimbursement_ledger", "args": {}}
+      {
+        "tool": "reimbursement_summary",
+        "args": {}
+      }
     ],
     "reference_answer": "Votre relevé indique que le remboursement kiné est 'en attente de la facture acquittée'. Je vous invite à contacter votre mutuelle pour plus de précisions.",
     "rubric": [

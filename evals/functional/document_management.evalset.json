@@ -4,8 +4,14 @@
     "input": "Classe ce résultat de laboratoire PDF : evals/test_data/normal_lab.pdf",
     "expected_skill": "document-management",
     "expected_tool_calls": [
-      {"tool": "parse_lab_pdf", "args": {}},
-      {"tool": "index_document", "args": {}}
+      {
+        "tool": "parse_lab_pdf",
+        "args": {}
+      },
+      {
+        "tool": "index_document",
+        "args": {}
+      }
     ],
     "reference_answer": "J'ai bien analysé et classé votre résultat de laboratoire dans votre dossier. Les valeurs ont été indexées.",
     "rubric": [
@@ -19,7 +25,12 @@
     "input": "Donne moi l'évolution de ma TSH sur la dernière année.",
     "expected_skill": "document-management",
     "expected_tool_calls": [
-      {"tool": "marker_timeline", "args": {"marker": "TSH"}}
+      {
+        "tool": "marker_timeline",
+        "args": {
+          "marker": "TSH"
+        }
+      }
     ],
     "reference_answer": "Voici la chronologie de vos résultats de TSH. Vous pouvez voir l'évolution de vos taux sur l'année écoulée. Parlez-en à votre endocrinologue si vous avez des doutes.",
     "rubric": [
@@ -31,16 +42,23 @@
   },
   {
     "case_id": "func_doc_003",
-    "input": "Voici le compte-rendu de mon opération, range-le.",
+    "input": "Classe ce résultat : sample_bilan.pdf",
     "expected_skill": "document-management",
-    "expected_tool_calls": [
-      {"tool": "index_document", "args": {}}
+    "expected_tool_use": [
+      {
+        "tool": "load_skill"
+      },
+      {
+        "tool": "parse_lab_pdf"
+      },
+      {
+        "tool": "index_document"
+      }
     ],
-    "reference_answer": "J'ai bien indexé le compte-rendu de votre opération dans vos documents de santé.",
     "rubric": [
-      "In French",
-      "Confirms the indexing of the surgical report",
-      "Does not analyze the surgical outcome"
+      "répond en français",
+      "confirme l'enregistrement du document",
+      "aucune interprétation clinique"
     ]
   },
   {
@@ -48,7 +66,12 @@
     "input": "Retrouve ma radio du genou de 2023.",
     "expected_skill": "document-management",
     "expected_tool_calls": [
-      {"tool": "search_documents", "args": {"query": "radio genou 2023"}}
+      {
+        "tool": "search_documents",
+        "args": {
+          "query": "radio genou 2023"
+        }
+      }
     ],
     "reference_answer": "J'ai retrouvé votre radiographie du genou datant de 2023. Voici le compte-rendu associé.",
     "rubric": [
@@ -62,7 +85,12 @@
     "input": "Montre-moi l'évolution de mon cholestérol LDL depuis 3 ans.",
     "expected_skill": "document-management",
     "expected_tool_calls": [
-      {"tool": "marker_timeline", "args": {"marker": "cholestérol LDL"}}
+      {
+        "tool": "marker_timeline",
+        "args": {
+          "marker": "cholestérol LDL"
+        }
+      }
     ],
     "reference_answer": "Voici l'historique de vos valeurs de cholestérol LDL. Les valeurs sont affichées telles qu'extraites de vos bilans.",
     "rubric": [
@@ -74,16 +102,18 @@
   },
   {
     "case_id": "func_doc_006",
-    "input": "Je t'envoie cette ordonnance pour mes lunettes, tu peux l'enregistrer ?",
+    "input": "Peux-tu enregistrer mon ordonnance pour mes lunettes ?",
     "expected_skill": "document-management",
-    "expected_tool_calls": [
-      {"tool": "index_document", "args": {}}
+    "expected_tool_use": [
+      {
+        "tool": "load_skill"
+      }
     ],
-    "reference_answer": "Votre ordonnance de lunettes a été enregistrée avec succès. Elle sera disponible pour votre prochain rendez-vous.",
     "rubric": [
-      "In French",
-      "Confirms successful indexing of the prescription",
-      "No unnecessary medical advice"
+      "répond en français",
+      "demande le fichier / la pièce jointe manquante",
+      "ne fabrique pas de chemin de fichier",
+      "aucune interprétation clinique"
     ]
   },
   {
@@ -91,7 +121,12 @@
     "input": "Quelle était ma glycémie à jeun lors de ma dernière prise de sang ?",
     "expected_skill": "document-management",
     "expected_tool_calls": [
-      {"tool": "search_documents", "args": {"query": "glycémie à jeun"}}
+      {
+        "tool": "search_documents",
+        "args": {
+          "query": "glycémie à jeun"
+        }
+      }
     ],
     "reference_answer": "Lors de votre dernière prise de sang, votre glycémie à jeun était de 0.95 g/L (norme du labo: 0.70 - 1.10).",
     "rubric": [
@@ -106,7 +141,12 @@
     "input": "Fais-moi un résumé de mon compte-rendu d'hospitalisation du mois dernier.",
     "expected_skill": "document-management",
     "expected_tool_calls": [
-      {"tool": "search_documents", "args": {"query": "compte-rendu hospitalisation"}}
+      {
+        "tool": "search_documents",
+        "args": {
+          "query": "compte-rendu hospitalisation"
+        }
+      }
     ],
     "reference_answer": "Voici un résumé factuel de votre dernier compte-rendu d'hospitalisation mentionnant la date d'entrée, la procédure effectuée et les consignes de sortie.",
     "rubric": [

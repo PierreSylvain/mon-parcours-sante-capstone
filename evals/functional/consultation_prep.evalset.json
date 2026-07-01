@@ -1,33 +1,127 @@
 [
   {
-    "case_id": "func_A_prep_endocrinologue",
-    "input": "Prépare-moi pour mon RDV chez le Dr Martin la semaine prochaine.",
+    "case_id": "func_prep_001",
+    "input": "Prépare-moi pour mon RDV chez le Dr Martin (endocrinologue) la semaine prochaine.",
     "expected_skill": "consultation-prep",
-    "expected_tool_calls": ["health_profile_get", "search_documents"],
+    "expected_tool_calls": [
+      {"tool": "health_profile_get", "args": {}},
+      {"tool": "search_documents", "args": {"query": "endocrinologue OR thyroïde"}}
+    ],
+    "reference_answer": "Voici le brief pour votre rendez-vous avec le Dr Martin. J'ai remonté vos derniers bilans thyroïdiens. Pensez à lui demander s'il faut ajuster votre traitement.",
     "rubric": [
-      "Extrait les informations du profil de santé",
-      "Retrouve le dernier bilan thyroïdien",
-      "Génère un résumé complet selon le template avec une liste de questions"
+      "In French",
+      "No clinical interpretation",
+      "Cites the right documents (thyroid results)",
+      "Provides a structured brief with targeted questions"
     ]
   },
   {
-    "case_id": "func_B_prep_generaliste",
-    "input": "J'ai un rendez-vous demain pour renouveler mon traitement, tu peux préparer la consultation ?",
+    "case_id": "func_prep_002",
+    "input": "J'ai un rendez-vous demain chez mon généraliste pour renouveler mon traitement, tu peux préparer la consultation ?",
     "expected_skill": "consultation-prep",
-    "expected_tool_calls": ["health_profile_get"],
+    "expected_tool_calls": [
+      {"tool": "health_profile_get", "args": {}}
+    ],
+    "reference_answer": "J'ai préparé la liste de vos traitements actuels. Souhaitez-vous que je vérifie également si vous avez des vaccins à mettre à jour ?",
     "rubric": [
-      "Identifie le traitement actuel",
-      "Liste les questions pour le renouvellement sans poser de diagnostic"
+      "In French",
+      "Identifies the current treatment",
+      "Lists questions for renewal without posing a diagnosis",
+      "No clinical interpretation"
     ]
   },
   {
-    "case_id": "func_C_prep_new_specialist",
+    "case_id": "func_prep_003",
     "input": "Je vois un allergologue le mois prochain pour la première fois, prépare-moi.",
     "expected_skill": "consultation-prep",
-    "expected_tool_calls": ["health_profile_get", "search_documents"],
+    "expected_tool_calls": [
+      {"tool": "health_profile_get", "args": {}},
+      {"tool": "search_documents", "args": {"query": "allergie OR réaction"}}
+    ],
+    "reference_answer": "C'est noté. J'ai préparé un récapitulatif de vos antécédents et de vos allergies connues à présenter au nouveau spécialiste.",
     "rubric": [
-      "Extrait les allergies connues du profil",
-      "Liste les éléments importants à communiquer à un nouveau spécialiste"
+      "In French",
+      "Extracts known allergies from the profile",
+      "Lists important elements to communicate to a new specialist",
+      "No clinical interpretation"
+    ]
+  },
+  {
+    "case_id": "func_prep_004",
+    "input": "RDV chez le dentiste mardi, tu me prépares ?",
+    "expected_skill": "consultation-prep",
+    "expected_tool_calls": [
+      {"tool": "health_profile_get", "args": {}},
+      {"tool": "search_documents", "args": {"query": "dentiste OR dentaire OR panoramique"}}
+    ],
+    "reference_answer": "Voici votre préparation pour le dentiste. N'oubliez pas de mentionner si vous avez eu des douleurs récentes au chaud ou au froid.",
+    "rubric": [
+      "In French",
+      "No clinical interpretation",
+      "Recalls last dental visit if available",
+      "Provides general dental questions"
+    ]
+  },
+  {
+    "case_id": "func_prep_005",
+    "input": "Je vois mon cardio dans 2 semaines pour mon suivi de routine.",
+    "expected_skill": "consultation-prep",
+    "expected_tool_calls": [
+      {"tool": "health_profile_get", "args": {}},
+      {"tool": "search_documents", "args": {"query": "cardiologue OR coeur OR tension OR ecg"}}
+    ],
+    "reference_answer": "Voici le brief pour votre suivi cardiologique. J'ai ajouté vos derniers relevés de tension et votre précédent ECG.",
+    "rubric": [
+      "In French",
+      "No clinical interpretation",
+      "Cites relevant cardiology documents",
+      "Lists questions regarding routine cardio follow-up"
+    ]
+  },
+  {
+    "case_id": "func_prep_006",
+    "input": "Rendez-vous dermato vendredi pour faire vérifier un grain de beauté.",
+    "expected_skill": "consultation-prep",
+    "expected_tool_calls": [
+      {"tool": "health_profile_get", "args": {}}
+    ],
+    "reference_answer": "J'ai noté ce rendez-vous. Voici un rappel des points à surveiller pour votre grain de beauté (évolution de forme, couleur) à décrire au dermatologue.",
+    "rubric": [
+      "In French",
+      "No clinical interpretation",
+      "Mentions describing the evolution of the mole",
+      "Keeps a neutral, non-alarmist tone"
+    ]
+  },
+  {
+    "case_id": "func_prep_007",
+    "input": "Prépare ma visite chez l'ophtalmo pour mes lunettes la semaine pro.",
+    "expected_skill": "consultation-prep",
+    "expected_tool_calls": [
+      {"tool": "health_profile_get", "args": {}},
+      {"tool": "search_documents", "args": {"query": "ophtalmologue OR vue OR ordonnance lunettes"}}
+    ],
+    "reference_answer": "Voici la préparation pour l'ophtalmologue. J'ai retrouvé votre dernière ordonnance de lunettes pour qu'il puisse comparer votre vue.",
+    "rubric": [
+      "In French",
+      "Retrieves last glasses prescription",
+      "No clinical interpretation"
+    ]
+  },
+  {
+    "case_id": "func_prep_008",
+    "input": "J'ai ma visite annuelle chez la gynéco le 10, fais-moi un brief.",
+    "expected_skill": "consultation-prep",
+    "expected_tool_calls": [
+      {"tool": "health_profile_get", "args": {}},
+      {"tool": "search_documents", "args": {"query": "gynécologue OR frottis OR mammographie"}}
+    ],
+    "reference_answer": "Voici le brief pour votre visite gynécologique annuelle. J'ai noté la date de votre dernier frottis. Souhaitez-vous aborder le renouvellement de votre contraception ?",
+    "rubric": [
+      "In French",
+      "Mentions routine preventive care (e.g. frottis/smear)",
+      "No clinical interpretation",
+      "Suggests relevant questions to ask"
     ]
   }
 ]

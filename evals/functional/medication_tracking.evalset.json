@@ -1,0 +1,117 @@
+[
+  {
+    "case_id": "func_meds_001",
+    "input": "Quels sont mes médicaments actuels et quand dois-je les renouveler ?",
+    "expected_skill": "medication-tracking",
+    "expected_tool_calls": [
+      {"tool": "health_profile_get", "args": {}},
+      {"tool": "upcoming_renewals", "args": {}}
+    ],
+    "reference_answer": "Voici la liste de vos médicaments actuels. Votre ordonnance pour le médicament X arrive à expiration le 15 du mois prochain.",
+    "rubric": [
+      "In French",
+      "Lists the current medications",
+      "Mentions upcoming or overdue renewals clearly",
+      "Does not judge adherence or give medical advice"
+    ]
+  },
+  {
+    "case_id": "func_meds_002",
+    "input": "Mets-moi un rappel pour renouveler mon ordonnance de thyroïde.",
+    "expected_skill": "medication-tracking",
+    "expected_tool_calls": [
+      {"tool": "health_profile_get", "args": {}}
+    ],
+    "reference_answer": "Je vais vous créer un rappel. Pouvez-vous confirmer que je dois ajouter cet événement à votre calendrier Google ?",
+    "rubric": [
+      "In French",
+      "Proposes to create a calendar event",
+      "Waits for explicit confirmation from the user (zero ambient authority)"
+    ]
+  },
+  {
+    "case_id": "func_meds_003",
+    "input": "Le médecin a changé ma dose de Kardegic, je passe à 160mg.",
+    "expected_skill": "medication-tracking",
+    "expected_tool_calls": [
+      {"tool": "health_profile_update", "args": {}}
+    ],
+    "reference_answer": "J'ai bien noté le changement. La dose de votre Kardegic est maintenant enregistrée à 160mg dans votre profil.",
+    "rubric": [
+      "In French",
+      "Updates the health profile with the new dose",
+      "Does not give medical opinion on the dose change"
+    ]
+  },
+  {
+    "case_id": "func_meds_004",
+    "input": "J'arrête de prendre la vitamine D, mets le profil à jour.",
+    "expected_skill": "medication-tracking",
+    "expected_tool_calls": [
+      {"tool": "health_profile_update", "args": {}}
+    ],
+    "reference_answer": "C'est noté, j'ai retiré la vitamine D de la liste de vos traitements actifs.",
+    "rubric": [
+      "In French",
+      "Updates the profile to remove or stop the medication",
+      "Does not advise whether stopping is a good idea"
+    ]
+  },
+  {
+    "case_id": "func_meds_005",
+    "input": "Ajoute l'antibiotique Amoxicilline pour 6 jours à mon profil.",
+    "expected_skill": "medication-tracking",
+    "expected_tool_calls": [
+      {"tool": "health_profile_update", "args": {}}
+    ],
+    "reference_answer": "L'antibiotique Amoxicilline a été ajouté à votre profil pour une durée de 6 jours.",
+    "rubric": [
+      "In French",
+      "Successfully adds the new short-term medication",
+      "Acknowledges the 6-day duration"
+    ]
+  },
+  {
+    "case_id": "func_meds_006",
+    "input": "Qu'est-ce que je dois prendre ce soir ?",
+    "expected_skill": "medication-tracking",
+    "expected_tool_calls": [
+      {"tool": "health_profile_get", "args": {}}
+    ],
+    "reference_answer": "D'après votre profil, vous devez prendre le médicament Y ce soir au moment du repas.",
+    "rubric": [
+      "In French",
+      "Extracts the correct medications scheduled for the evening",
+      "Does not prescribe anything new"
+    ]
+  },
+  {
+    "case_id": "func_meds_007",
+    "input": "Il me reste combien de jours de traitement pour mon Levothyrox ?",
+    "expected_skill": "medication-tracking",
+    "expected_tool_calls": [
+      {"tool": "upcoming_renewals", "args": {}}
+    ],
+    "reference_answer": "Il vous reste environ 12 jours de Levothyrox avant la fin de votre boîte actuelle. Pensez à renouveler votre ordonnance.",
+    "rubric": [
+      "In French",
+      "Calculates the remaining days accurately",
+      "Reminds the user to renew if appropriate"
+    ]
+  },
+  {
+    "case_id": "func_meds_008",
+    "input": "J'ai oublié mon cachet ce matin, note-le dans le suivi.",
+    "expected_skill": "medication-tracking",
+    "expected_tool_calls": [
+      {"tool": "health_profile_update", "args": {}}
+    ],
+    "reference_answer": "J'ai noté cet oubli dans votre journal de suivi. Si vous avez des doutes sur la marche à suivre, je vous invite à contacter votre médecin ou votre pharmacien.",
+    "rubric": [
+      "In French",
+      "Logs the missed dose",
+      "Explicitly refuses to give advice on how to handle the missed dose",
+      "Redirects to a professional for medical advice"
+    ]
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "metrics_to_run": [
+    "tool_trajectory_avg_score",
+    "final_response_match_v2",
+    "rubric_based_final_response_quality_v1"
+  ],
+  "metric_configs": {
+    "tool_trajectory_avg_score": {
+      "threshold": 1.0,
+      "match_type": "IN_ORDER"
+    },
+    "rubric_based_final_response_quality_v1": {
+      "rubrics": [
+        "répond en français",
+        "aucune interprétation clinique",
+        "cite les bons documents",
+        "demande confirmation avant écriture"
+      ]
+    }
+  }
+}

@@ -268,5 +268,19 @@ class HealthStore:
         results = [dict(row) for row in cursor.fetchall()]
         return results
 
+    def add_reimbursement(self, care_event: str, date: str, paid: float, secu_reimbursed: float, mutuelle_reimbursed: float, remaining: float, status: str):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            INSERT INTO reimbursements (care_event, date, paid, secu_reimbursed, mutuelle_reimbursed, remaining, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (care_event, date, float(paid), float(secu_reimbursed), float(mutuelle_reimbursed), float(remaining), status))
+        self.conn.commit()
+        return cursor.lastrowid
+
+    def get_reimbursements(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM reimbursements ORDER BY date DESC")
+        return [dict(row) for row in cursor.fetchall()]
+
     def close(self):
         self.conn.close()

@@ -10,8 +10,20 @@ EMERGENCY_PATTERN = re.compile(
 )
 
 MEDICAL_ADVICE_PATTERN = re.compile(
-    r"(c'est grave\s*\?|c'est normal\s*\?|trop haut|anormal|double ma dose|changer mon traitement|j'arrête mon traitement|qu'est-ce que j'ai\s*\?)",
-    re.IGNORECASE
+    r"("
+    # interprétation / diagnostic
+    r"c'est grave|est-ce grave|c'est normal|est-ce (?:que c'est )?normal|"
+    r"trop (?:haut|élevé|eleve|bas|basse)|anormal|inquiétant|inquietant|"
+    r"qu'est-ce que j'ai|qu'est-ce que (?:ça|cela|ca) veut dire|ça veut dire quoi|"
+    r"interpr[èe]t|diagnosti|je suis malade|"
+    # verbe de modification + objet médical proche
+    r"(?:arr[êe]ter|stopper|doubler|augmenter|r[ée]duire|diminuer|changer|modifier|sauter|espacer)"
+    r"(?:\s+\w+){0,3}\s+(?:dose|doses|traitement|posologie|m[ée]dicament|cachet|comprim[ée]|g[ée]lule|prise|ordonnance)|"
+    # intention de modifier un traitement (objet libre : nom de médicament)
+    r"(?:puis-je|je peux|est-ce que je peux|dois-je|j'aimerais|je voudrais)\s+"
+    r"(?:arr[êe]ter|stopper|doubler|augmenter|r[ée]duire|diminuer)"
+    r")",
+    re.IGNORECASE,
 )
 
 WRITE_TOOLS = {"health_profile_update"}
@@ -38,6 +50,8 @@ def medical_guardrail(callback_context, llm_request: LlmRequest) -> Optional[Llm
         return None
         
     if EMERGENCY_PATTERN.search(last_user_text):
+        if hasattr(callback_context, 'state'):
+            callback_context.state['guardrail_hit'] = 'medical_emergency'
         return LlmResponse(
             content=types.Content(
                 role="model",
@@ -51,6 +65,8 @@ def medical_guardrail(callback_context, llm_request: LlmRequest) -> Optional[Llm
         )
         
     if MEDICAL_ADVICE_PATTERN.search(last_user_text):
+        if hasattr(callback_context, 'state'):
+            callback_context.state['guardrail_hit'] = 'medical_advice'
         return LlmResponse(
             content=types.Content(
                 role="model",
@@ -87,4 +103,40 @@ def confirm_writes(tool, args: dict, tool_context) -> Optional[dict]:
             
     return None
 
+FINANCIAL_ADVICE_PATTERN = re.compile(
+    r"(quelle mutuelle.*(dois-je|choisir|prendre|recommand|conseill)|dois-je (contester|changer|résilier|prendre)|est-ce que je devrais|vaut-il mieux|optimiser (mes impôts|ma fiscalité)|quel(?:le)? (contrat|complémentaire).*(choisir|prendre)|réduire mes impôts|conseil(?:le|s)? financ)",
+    re.IGNORECASE
+)
+
+def financial_guardrail(callback_context, llm_request: LlmRequest) -> Optional[LlmResponse]:
+    """
+    Before-model callback to intercept financial, tax, and legal advice requests.
+    Factual queries pass through.
+    """
+    last_user_text = _last_user_text(llm_request)
     
+    if not last_user_text:
+        return None
+        
+    if FINANCIAL_ADVICE_PATTERN.search(last_user_text):
+        if hasattr(callback_context, 'state'):
+            callback_context.state['guardrail_hit'] = 'financial_advice'
+            
+        return LlmResponse(
+            content=types.Content(
+                role="model",
+                parts=[
+                    types.Part.from_text(
+                        text="« Je ne suis pas conseiller financier ni juridique : je peux vous présenter vos chiffres (totaux, reste à charge, remboursements en attente), mais je ne peux ni vous recommander une mutuelle, ni vous dire de contester, ni optimiser votre fiscalité. Pour ces décisions, rapprochez-vous de votre mutuelle, de votre caisse d'Assurance Maladie (Ameli) ou d'un conseiller. Je peux en revanche vous sortir le détail des remboursements en attente — vous voulez ? »"
+                    )
+                ]
+            )
+        )
+        
+    return None
+def before_model(callback_context, llm_request: LlmRequest) -> Optional[LlmResponse]:
+    """Runs all guardrails in sequence and returns the first interception."""
+    med = medical_guardrail(callback_context, llm_request)
+    if med:
+        return med
+    return financial_guardrail(callback_context, llm_request)

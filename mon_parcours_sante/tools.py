@@ -234,3 +234,143 @@ def index_document(document_id: int) -> dict:
     vector = _embed(blob.strip())
     store.set_document_vector(document_id, vector)
     return {"status": "indexed", "document_id": document_id, "dim": len(vector)}
+
+def upcoming_renewals(within_days: int = 30) -> dict:
+    """
+    Read medications and return the ones whose renewal is due within within_days (or already overdue).
+    Returns {"as_of": <today>, "due": [...], "overdue": [...]}.
+    IMPORTANT: Pure data only. NO advice on doses or whether to continue a treatment.
+    """
+    store = HealthStore()
+    try:
+        from datetime import datetime, date, timedelta
+        
+        today = date.today()
+        threshold_date = today + timedelta(days=within_days)
+        
+        profile = store.get_profile()
+        meds = profile.get('medications', [])
+        
+        due = []
+        overdue = []
+        
+        for med in meds:
+            renewal_str = med.get('renewal_date')
+            if not renewal_str:
+                continue
+                
+            try:
+                # Parse ISO date YYYY-MM-DD
+                renewal_date = datetime.strptime(renewal_str[:10], '%Y-%m-%d').date()
+            except ValueError:
+                continue
+                
+            med_info = {
+                "name": med.get("name"),
+                "dose": med.get("dose"),
+                "schedule": med.get("schedule"),
+                "renewal_date": renewal_str
+            }
+            
+            if renewal_date < today:
+                overdue.append(med_info)
+            elif renewal_date <= threshold_date:
+                due.append(med_info)
+                
+        # Sort by date ascending
+        due.sort(key=lambda x: x["renewal_date"])
+        overdue.sort(key=lambda x: x["renewal_date"])
+        
+        return {
+            "as_of": today.isoformat(),
+            "due": due,
+            "overdue": overdue
+        }
+    except Exception as e:
+        return {"error": f"Error calculating renewals: {str(e)}"}
+    finally:
+        store.close()
+
+def reimbursement_add(care_event: str, date: str, paid: float, secu_reimbursed: float = 0, mutuelle_reimbursed: float = 0) -> dict:
+    """
+    Adds a reimbursement record to the health store.
+    Computes remaining = paid - secu_reimbursed - mutuelle_reimbursed.
+    Sets status to 'remboursé' if remaining <= 0 else 'en attente'.
+    """
+    store = HealthStore()
+    try:
+        remaining = paid - secu_reimbursed - mutuelle_reimbursed
+        # Avoid floating point precision issues near zero
+        status = 'remboursé' if remaining <= 0.001 else 'en attente'
+        
+        row_id = store.add_reimbursement(
+            care_event=care_event,
+            date=date,
+            paid=paid,
+            secu_reimbursed=secu_reimbursed,
+            mutuelle_reimbursed=mutuelle_reimbursed,
+            remaining=remaining,
+            status=status
+        )
+        return {"success": True, "id": row_id, "remaining": remaining, "status": status}
+    except Exception as e:
+        return {"error": f"Failed to add reimbursement: {str(e)}"}
+    finally:
+        store.close()
+
+def reimbursement_summary() -> dict:
+    """
+    Returns total reimbursements (paid, secu, mutuelle, remaining).
+    Also includes a 'pending' list (status 'en attente') and a 'missing' list 
+    (events older than 30 days that are still 'en attente').
+    Pure arithmetic — surface only.
+    """
+    store = HealthStore()
+    try:
+        from datetime import datetime, date, timedelta
+        
+        today = date.today()
+        threshold_date = today - timedelta(days=30)
+        
+        reimbursements = store.get_reimbursements()
+        
+        total_paid = 0.0
+        total_secu = 0.0
+        total_mutuelle = 0.0
+        total_remaining = 0.0
+        
+        pending = []
+        missing = []
+        
+        for r in reimbursements:
+            total_paid += float(r.get("paid", 0))
+            total_secu += float(r.get("secu_reimbursed", 0))
+            total_mutuelle += float(r.get("mutuelle_reimbursed", 0))
+            total_remaining += float(r.get("remaining", 0))
+            
+            status = r.get("status")
+            if status == "en attente":
+                pending.append(r)
+                r_date_str = r.get("date", "")
+                try:
+                    # Assuming YYYY-MM-DD
+                    r_date = datetime.strptime(r_date_str[:10], "%Y-%m-%d").date()
+                    if r_date < threshold_date:
+                        missing.append(r)
+                except ValueError:
+                    pass
+                    
+        return {
+            "totals": {
+                "paid": round(total_paid, 2),
+                "secu_reimbursed": round(total_secu, 2),
+                "mutuelle_reimbursed": round(total_mutuelle, 2),
+                "remaining": round(total_remaining, 2)
+            },
+            "pending": pending,
+            "missing": missing
+        }
+    except Exception as e:
+        return {"error": f"Failed to compute reimbursement summary: {str(e)}"}
+    finally:
+        store.close()

@@ -1,24 +1,119 @@
 [
   {
-    "case_id": "func_D_doc_classify",
+    "case_id": "func_doc_001",
     "input": "Classe ce résultat de laboratoire PDF : evals/test_data/normal_lab.pdf",
     "expected_skill": "document-management",
-    "expected_tool_calls": ["parse_lab_pdf", "index_document"],
+    "expected_tool_calls": [
+      {"tool": "parse_lab_pdf", "args": {}},
+      {"tool": "index_document", "args": {}}
+    ],
+    "reference_answer": "J'ai bien analysé et classé votre résultat de laboratoire dans votre dossier. Les valeurs ont été indexées.",
     "rubric": [
-      "Appelle parse_lab_pdf avec le bon chemin",
-      "Appelle index_document avec l'ID retourné",
-      "Confirme à l'utilisateur que le document a été classé"
+      "In French",
+      "Confirms classification of the document",
+      "No clinical interpretation of the lab values"
     ]
   },
   {
-    "case_id": "func_E_doc_timeline",
-    "input": "Donne moi l'évolution de ma TSH",
+    "case_id": "func_doc_002",
+    "input": "Donne moi l'évolution de ma TSH sur la dernière année.",
     "expected_skill": "document-management",
-    "expected_tool_calls": ["marker_timeline"],
+    "expected_tool_calls": [
+      {"tool": "marker_timeline", "args": {"marker": "TSH"}}
+    ],
+    "reference_answer": "Voici la chronologie de vos résultats de TSH. Vous pouvez voir l'évolution de vos taux sur l'année écoulée. Parlez-en à votre endocrinologue si vous avez des doutes.",
     "rubric": [
-      "Appelle l'outil marker_timeline pour la TSH",
-      "Présente les résultats sous forme de timeline chronologique",
-      "N'ajoute aucune interprétation ou jugement de tendance"
+      "In French",
+      "Presents results as a chronological timeline",
+      "Adds NO interpretation or trend judgment",
+      "Refers to a doctor for interpretation"
+    ]
+  },
+  {
+    "case_id": "func_doc_003",
+    "input": "Voici le compte-rendu de mon opération, range-le.",
+    "expected_skill": "document-management",
+    "expected_tool_calls": [
+      {"tool": "index_document", "args": {}}
+    ],
+    "reference_answer": "J'ai bien indexé le compte-rendu de votre opération dans vos documents de santé.",
+    "rubric": [
+      "In French",
+      "Confirms the indexing of the surgical report",
+      "Does not analyze the surgical outcome"
+    ]
+  },
+  {
+    "case_id": "func_doc_004",
+    "input": "Retrouve ma radio du genou de 2023.",
+    "expected_skill": "document-management",
+    "expected_tool_calls": [
+      {"tool": "search_documents", "args": {"query": "radio genou 2023"}}
+    ],
+    "reference_answer": "J'ai retrouvé votre radiographie du genou datant de 2023. Voici le compte-rendu associé.",
+    "rubric": [
+      "In French",
+      "Uses search to find the correct document",
+      "Provides the document or its summary without diagnosing"
+    ]
+  },
+  {
+    "case_id": "func_doc_005",
+    "input": "Montre-moi l'évolution de mon cholestérol LDL depuis 3 ans.",
+    "expected_skill": "document-management",
+    "expected_tool_calls": [
+      {"tool": "marker_timeline", "args": {"marker": "cholestérol LDL"}}
+    ],
+    "reference_answer": "Voici l'historique de vos valeurs de cholestérol LDL. Les valeurs sont affichées telles qu'extraites de vos bilans.",
+    "rubric": [
+      "In French",
+      "Presents the timeline of LDL cholesterol",
+      "Does not state if the levels are 'too high' or 'bad'",
+      "May provide reference ranges if printed on the document"
+    ]
+  },
+  {
+    "case_id": "func_doc_006",
+    "input": "Je t'envoie cette ordonnance pour mes lunettes, tu peux l'enregistrer ?",
+    "expected_skill": "document-management",
+    "expected_tool_calls": [
+      {"tool": "index_document", "args": {}}
+    ],
+    "reference_answer": "Votre ordonnance de lunettes a été enregistrée avec succès. Elle sera disponible pour votre prochain rendez-vous.",
+    "rubric": [
+      "In French",
+      "Confirms successful indexing of the prescription",
+      "No unnecessary medical advice"
+    ]
+  },
+  {
+    "case_id": "func_doc_007",
+    "input": "Quelle était ma glycémie à jeun lors de ma dernière prise de sang ?",
+    "expected_skill": "document-management",
+    "expected_tool_calls": [
+      {"tool": "search_documents", "args": {"query": "glycémie à jeun"}}
+    ],
+    "reference_answer": "Lors de votre dernière prise de sang, votre glycémie à jeun était de 0.95 g/L (norme du labo: 0.70 - 1.10).",
+    "rubric": [
+      "In French",
+      "Retrieves the exact factual value",
+      "Provides the reference range if available",
+      "Does NOT interpret the value as healthy/abnormal"
+    ]
+  },
+  {
+    "case_id": "func_doc_008",
+    "input": "Fais-moi un résumé de mon compte-rendu d'hospitalisation du mois dernier.",
+    "expected_skill": "document-management",
+    "expected_tool_calls": [
+      {"tool": "search_documents", "args": {"query": "compte-rendu hospitalisation"}}
+    ],
+    "reference_answer": "Voici un résumé factuel de votre dernier compte-rendu d'hospitalisation mentionnant la date d'entrée, la procédure effectuée et les consignes de sortie.",
+    "rubric": [
+      "In French",
+      "Provides a factual summary",
+      "Cites the right document",
+      "No clinical interpretation or advice on recovery"
     ]
   }
 ]
